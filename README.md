@@ -1,10 +1,10 @@
 # NodeJs + Express, PostgreSQL, React, Nginx multi-image Docker example
 
-*An example of a multi-image Docker container running NodeJs + Express, PostgreSQL, React, and Nginx that I created for a tutorial that I'm working on*
+_An example of a multi-image Docker container running NodeJs + Express, PostgreSQL, React, and Nginx that I created for a tutorial that I'm working on_
 
 ### Initial Setup
 
-Create a directory for each component, except the frontend, in our application. We will be using Vite to create the frontend which will create a directory for the frontend in the process. 
+Create a directory for each component, except the frontend, in our application. We will be using Vite to create the frontend which will create a directory for the frontend in the process.
 
 ```CONSOLE
 mkdir backend database nginx
@@ -16,7 +16,7 @@ Set up a very simple Node JS + Express project with TypeScript for the backend s
 
 ```CONSOLE
 cd backend
-yarn init 
+yarn init
 ```
 
 Answer the questions that you are presented with. The defaults will do fine. This will create the `package.json` file which we will be editing in a moment anyway.
@@ -28,7 +28,7 @@ yarn add express cors
 yarn add -D typescript @types/express @types/node @types/cors concurrently nodemon
 ```
 
-Edit the `package.json` file and add the commands to the scripts section to allow us to start the server in both development and production mode. Also pay attention to the `"main"` part of this JSON file. You can set that as whatever you like but it ought to be the entry point to the application. I have set mine to `app.ts` 
+Edit the `package.json` file and add the commands to the scripts section to allow us to start the server in both development and production mode. Also pay attention to the `"main"` part of this JSON file. You can set that as whatever you like but it ought to be the entry point to the application. I have set mine to `app.ts`
 
 ```JSON
 {
@@ -94,30 +94,32 @@ Before we can run our code we need to initialize the TypeScript compiler:
 npx tsc --init
 ```
 
-This will create the `tsconfig.json` file. We will need to edit one option in this file to specify our output directory for the transpiled JavaScript code to live. Find the following section 
+This will create the `tsconfig.json` file. We will need to edit one option in this file to specify our output directory for the transpiled JavaScript code to live. Find the following section
 
 ```JSON
 // "inlineSourceMap": true,                          /* Include sourcemap files inside the emitted JavaScript. */
     // "outFile": "./",                                  /* Specify a file that bundles all outputs into one JavaScript file. If 'declaration' is true, also designates a file that bundles all .d.ts output. */
     "outDir": "./dist",                                   /* Specify an output folder for all emitted files. */
     // "removeComments": true,                           /* Disable emitting comments. */
-    // "noEmit": true,       
+    // "noEmit": true,
 ```
 
 Set the `"outDir"` to be the same as mine: `"./dist"`
 
 Next we will dockerize the backend server and ensure that it is working. But first we should understand some Docker terminology:
+
 ### Understanding Some Docker Terminology:
 
 - What is a Dockerfile?
-	- A text document which tells Docker how to assemble an image.
+
+  - A text document which tells Docker how to assemble an image.
 
 - What is a Docker image?
-	- A packaged set of instructions that is used to create Docker containers
+
+  - A packaged set of instructions that is used to create Docker containers
 
 - What is a Docker container?
-	- A runnable instance of an image that is isolated from the system it is running on. The same Docker container can run on Windows, Mac, etc.
-
+  - A runnable instance of an image that is isolated from the system it is running on. The same Docker container can run on Windows, Mac, etc.
 
 ### Dockerizing The Backend Server
 
@@ -153,13 +155,12 @@ EXPOSE 3000
 CMD ["yarn", "dev"]
 ```
 
-Each section is commented to describe what the command is doing, but to be clear we are 
+Each section is commented to describe what the command is doing, but to be clear we are
 
 - 1. Pull the docker image for Node from Docker Hub (They have docker images for many different applications, programming environments and servers).
-  
 - 2. Set the working directory that will be used inside of the container. (`usr/src/app` is fairly standard for a Node app).
 
-- 3. Copy our `package.json` file from our source directory into the container's working directory. 
+- 3. Copy our `package.json` file from our source directory into the container's working directory.
 
 - 4. Run `yarn install` to install the dependencies that we need.
 
@@ -215,11 +216,10 @@ You should see the following output from your terminal:
 ```CONSOLE
 12:31:32 AM - Starting compilation in watch mode...
 nodeserver-1  | [0]
-nodeserver-1  | [0] 
+nodeserver-1  | [0]
 nodeserver-1  | [0] 12:31:33 AM - Found 0 errors. Watching for file changes.
 nodeserver-1  | [1] ⚡️[server]: Server is running at http://localhost:3000
 ```
-
 
 ### Adding a Dockerized PostgreSQL database and using Prisma as an ORM.
 
@@ -255,7 +255,7 @@ services:
       context: ./database
     ports:
       - "5432:5432"
-      
+
   nodeserver:
     restart: always
     build:
@@ -315,7 +315,7 @@ ENV DATABASE_URL="postgresql://devtestuser:Devtestpassword!123@postgresqlserver:
 ...
 ```
 
-This allows us to make migrations locally using the `.env` file to create the environment variables and also from inside the Docker container using the environment variables contained in the  Dockerfile. 
+This allows us to make migrations locally using the `.env` file to create the environment variables and also from inside the Docker container using the environment variables contained in the Dockerfile.
 
 Install the Prisma client:
 
@@ -333,7 +333,7 @@ model Post {
 }
 ```
 
-Run all of the services with: 
+Run all of the services with:
 
 ```CONSOLE
 docker-compose watch
@@ -364,7 +364,7 @@ Your database is now in sync with your schema.
 ✔ Generated Prisma Client (v5.12.1) to ./node_modules/@prisma/client in 90ms
 ```
 
-Indicating that the migration has been successful. 
+Indicating that the migration has been successful.
 
 Modify the `Dockerfile` so that any new migrations get applied to the database when the Docker container restarts:
 
@@ -399,7 +399,6 @@ CMD ["sh", "-c", "npx prisma generate && npx prisma migrate dev && yarn dev"]
 ```
 
 We now have a backend server using NodeJS, Express, and Prisma, and a PostgreSQL database as separate images inside a docker container and have confirmed that they are able to communicate. Next, we will set up a React project using Vite for the front end of the web application.
-
 
 ### Creating a React Frontend With Vite
 
@@ -447,7 +446,7 @@ export default defineConfig({
  });
 ```
 
-If we run the server again with `yarn dev` we should see that the application is being hosted at port 8080, which is the standard port for a react application. We will later proxy connections from port 80 to our react application through Nginx. 
+If we run the server again with `yarn dev` we should see that the application is being hosted at port 8080, which is the standard port for a react application. We will later proxy connections from port 80 to our react application through Nginx.
 
 You can create a production build of the application by running `yarn build`. This will create a directory called `dist` inside the `frontend` directory. We can then use `yarn preview` or install and use the NPM package serve to serve our production build:
 
@@ -483,39 +482,6 @@ EXPOSE 8080
 
 # run our application in dev mode
 CMD [ "yarn", "dev" ]
-```
-
-It will look a little different when we move from development to production:
-// TODO => DO NOT INCLUDE THIS IN THE BLOG IN CASE I AM WRONG!!!
-
-```Dockerfile
-###
-# Frontend Dockerfile
-###
-
-# pull the Node.js Docker image
-FROM node:alpine
-
-# create the directory inside the container
-WORKDIR /usr/src/app
-
-# copy the package.json files from local machine to the workdir in container
-COPY package*.json yarn.lock ./
-
-# run yarn install in our local machine
-RUN yarn install
-
-# copy the generated modules and all other files to the container
-COPY . .
-
-# generate the build
-RUN yarn build
-
-# our app is running on port 5000 within the container, so need to expose it
-EXPOSE 8080
-
-# run our application in production mode
-CMD [ "yarn", "preview" ]
 ```
 
 Now let's modify the `docker-compose` script in the root directory:
@@ -570,10 +536,9 @@ We can now run the backend, frontend, and database with just one command:
 docker compose watch
 ```
 
-
 ### Dockerizing the Nginx Reverse Proxy
 
-In the nginx section of our app we need to create a config file the same way that you would if you were using Nginx outside of a container. We will use this config file to tell Nginx to listen on port `80` and to reverse proxy any connections to port `8080`.  It will also forward any connections to `http://localhost:80/api` to `http://locahost:3000`. 
+In the nginx section of our app we need to create a config file the same way that you would if you were using Nginx outside of a container. We will use this config file to tell Nginx to listen on port `80` and to reverse proxy any connections to port `8080`. It will also forward any connections to `http://localhost:80/api` to `http://locahost:3000`.
 
 Create a file called `default.conf` inside the nginx directory and enter the following config:
 
@@ -596,7 +561,7 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_pass http://reactserver:8080;       
+        proxy_pass http://reactserver:8080;
     }
 }
 ```
@@ -608,7 +573,7 @@ FROM nginx
 COPY default.conf /etc/nginx/conf.d/default.conf
 ```
 
-This will pull the official nginx image from Docker Hub and copies our config file into the correct directory that Nginx will look in. 
+This will pull the official nginx image from Docker Hub and copies our config file into the correct directory that Nginx will look in.
 
 Update the `docker-compse` script to run the Nginx proxy also:
 
@@ -662,7 +627,6 @@ services:
       - "80:80"
 ```
 
-
 ### Connecting the frontend to the backend
 
 To connect the frontend to the backend we need to make HTTP requests from the frontend to an API endpoint on the backend. We'll add 2 simple API endpoints on the in `backend/app.ts`:
@@ -694,7 +658,7 @@ app.post("/api/posts", async (req: Request, res: Response) => {
   res
     .status(200)
     .json({ message: "Post created", id:post.id, title: post.title, content: post.content });
-  
+
   }
   catch(e: any)
   {
@@ -702,7 +666,6 @@ app.post("/api/posts", async (req: Request, res: Response) => {
   }
   ...
 ```
-
 
 Now in `frontend` let's delete all of the CSS from the `index.css` and `app.css` files in the frontend. Remove all of the JSX from the `return` statement in the `src/App.tsx` file so that it looks like this:
 
@@ -721,7 +684,7 @@ export default App
 
 ```
 
-Confirm that you are able to see the Hello World message when you navigate to `localhost:80` in the browser. 
+Confirm that you are able to see the Hello World message when you navigate to `localhost:80` in the browser.
 
 Install `axios` as a dependency. This will be used to make the HTTP requests:
 
@@ -842,7 +805,6 @@ const PostList = (props: any) => {
 export default PostList;
 
 ```
-
 
 Add the following JSX to your `App.tsx` to finish up our frontend's layout and logic:
 
@@ -1025,7 +987,7 @@ If we enter a title, and content, and then click the post button, we should see 
 
 ![alt text](readme_images/appPreviewWithpost.png)
 
-So that's it. If you made it this far, welcome to the starting point of developing a web app with Docker, NodeJs, PostgreSQL, and Nginx! 
-If you make something interesting with this, I would love to see it, and if you find some bugs, please report them, and I will do my best to fix them. 
+So that's it. If you made it this far, welcome to the starting point of developing a web app with Docker, NodeJs, PostgreSQL, and Nginx!
+If you make something interesting with this, I would love to see it, and if you find some bugs, please report them, and I will do my best to fix them.
 
-Thank you :) 
+Thank you :)
