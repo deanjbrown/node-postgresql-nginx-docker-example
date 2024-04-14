@@ -1,0 +1,47 @@
+version: "3.8"
+services:
+  postgresqlserver:
+    restart: always
+    build:
+      context: ./database
+    ports:
+      - "5432:5432"
+
+  nodeserver:
+    restart: always
+    build:
+      context: ./backend
+    ports:
+      - "3000:3000"
+    develop:
+      watch:
+        - action: sync
+          path: ./backend
+          target: /usr/src/app
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+
+  reactserver:
+    restart: always
+    build:
+      context: ./frontend
+    ports:
+      - "8080:8080"
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend
+          target: /usr/src/app
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+
+  nginxreverseproxy:
+    restart: always
+    build:
+      context: ./nginx
+    ports:
+      - "80:80"
